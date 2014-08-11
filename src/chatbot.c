@@ -47,7 +47,9 @@ int main(void) {
        else if (strncmp(word, "doing", 50) == 0) {
         printf("> %s\n", "How can you do that?" );
       }
-
+       else if (strncmp(word, "light", 50) == 0) {
+         printf("> %s\n", "Yes, I like light");
+       }
       else {
         printf("> %s\n", "Sorry, I don't know what to say about that" );
       }
