@@ -1,4 +1,6 @@
 # Object files
+.vscode/settings.json
+chat
 *.o
 *.ko
 *.obj
