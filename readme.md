@@ -4,7 +4,8 @@ Chatbot is a simple bot written in C. The base algorithm is that our conversatio
 
 ## Installation
 
-Installation is very easy via `MakeFile':
+Installation is very easy via `MakeFile` :
+
 Just run: 
 
 ```
@@ -14,7 +15,7 @@ gcc src/chatbot.c -o chat
 
 ## Usage
 
-After running `make all` you get a binary named as `chat`. Just run `./chat` and start chatting with the bot.
+After running `make all` you get a executable named as `chat`. Now run `./chat` and start chatting with the bot.
 
 ## Demo
 
