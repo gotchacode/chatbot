@@ -182,7 +182,7 @@ int main(void) {
       if (ht_get(hashtable, word) != NULL) {
         printf("\n$ (chatbot) %s\n", ht_get(hashtable, word));
       } else {
-        printf("$ %s\n", "Sorry, I don't know what to say about that" );
+        printf("\n$ (chatbot) %s\n", "Sorry, I don't know what to say about that" );
       }
       word = strtok(NULL, SEPCHARS);
     }
