@@ -175,6 +175,9 @@ int main(void) {
     word = strtok(line, SEPCHARS); /*Find first word */
 
     while (word != NULL) {
+      if (strncasecmp(word, "exit", 150) == 0) {
+        exit(0);
+      }
       // Some responses based on the keywords
       if (ht_get(hashtable, word) != NULL) {
         printf("\n$ (chatbot) %s\n", ht_get(hashtable, word));
