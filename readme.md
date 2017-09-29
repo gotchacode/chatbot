@@ -1,12 +1,14 @@
 # Chatbot
 
+[![Build Status](https://travis-ci.org/vinitkumar/chatbot.svg?branch=master)](https://travis-ci.org/vinitkumar/chatbot)
+
 Chatbot is a simple bot written in C. The base algorithm is that our conversation is based on keywords. The bot seaches for this keyword and present a suitable response on basis of that keyword.
 
 ## Installation
 
 Installation is very easy via `MakeFile` :
 
-Just run: 
+Just run:
 
 ```
 chatbot ➤ make
