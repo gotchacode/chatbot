@@ -158,6 +158,12 @@ int main(void) {
   char line[LINELENGTH];
   char *word;
   printf("$ Chatbot v1.0.0!\n");
+  
+  // NOTE: Hashtables are not the correct data structure for this. We need a graph data 
+  // structure so as to do any meaninful conversion
+  // https://www.freecodecamp.org/news/have-you-had-the-talk-with-your-chatbot-about-graph-data-structures-3aaf5c3ae52c/
+  // Looks like a decent place for making a graph DB in C
+  // https://www.cs.yale.edu/homes/aspnes/pinewiki/C(2f)Graphs.html
 
   hashtable_t *hashtable = ht_create(65536);
   // Can this be read from a JSON or something and we use that to populate the field
