@@ -160,6 +160,8 @@ int main(void) {
   printf("$ Chatbot v1.0.0!\n");
 
   hashtable_t *hashtable = ht_create(65536);
+  // Can this be read from a JSON or something and we use that to populate the field
+  // We can consider using this: https://gitlab.com/esr/microjson/-/tree/master
   ht_set(hashtable, "hi", "hello");
   ht_set(hashtable, "hey", "hello");
   ht_set(hashtable, "hear", "What you heard is right");
@@ -174,6 +176,9 @@ int main(void) {
     word = strtok(line, SEPCHARS); /*Find first word */
 
     while (word != NULL) {
+      // Using multiple keywords that matches the key returns the message multiple times
+      // It should rather, make sense of the sentence and then return an apropriate response.
+      // So basically, in a sentence, find a keyword and answer it around that.
       if (strncasecmp(word, "exit", 150) == 0) {
         exit(0);
       }
