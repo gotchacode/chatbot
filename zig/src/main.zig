@@ -1,17 +1,15 @@
 const std = @import("std");
 const chatbot = @import("chatbot.zig");
 
-pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    defer _ = gpa.deinit();
-    const allocator = gpa.allocator();
+pub fn main(init: std.process.Init) !void {
+    const allocator = init.gpa;
+    const io = init.io;
 
-    // Zig 0.15 I/O: explicit buffer management
     var stdout_buf: [4096]u8 = undefined;
-    var stdout = std.fs.File.stdout().writer(&stdout_buf);
+    var stdout = std.Io.File.stdout().writerStreaming(io, &stdout_buf);
 
     var stdin_buf: [4096]u8 = undefined;
-    var stdin = std.fs.File.stdin().reader(&stdin_buf);
+    var stdin = std.Io.File.stdin().readerStreaming(io, &stdin_buf);
 
     try stdout.interface.print("$ Chatbot v1.0.0!\n", .{});
     try stdout.interface.flush();
@@ -32,12 +30,9 @@ pub fn main() !void {
         try stdout.interface.print("\n$ (user) ", .{});
         try stdout.interface.flush();
 
-        // Read line using Zig 0.15 delimiter API
-        // Use takeDelimiter which returns null on EOF with empty remaining
         const line = stdin.interface.takeDelimiter('\n') catch |err| {
             switch (err) {
                 error.StreamTooLong => {
-                    // Line too long, skip it
                     continue;
                 },
                 else => return err,
@@ -47,7 +42,7 @@ pub fn main() !void {
         if (line == null) break;
 
         const trimmed = std.mem.trim(u8, line.?, " \t\r\n");
-        if (trimmed.len == 0) continue; // Empty line, keep going
+        if (trimmed.len == 0) continue;
 
         var word_iter = std.mem.tokenizeAny(u8, trimmed, chatbot.SeparatorChars);
 
