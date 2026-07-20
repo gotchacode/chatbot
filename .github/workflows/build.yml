@@ -49,6 +49,12 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
+      - name: Install C23 compiler on macOS
+        if: matrix.platform == 'macos'
+        run: |
+          brew install llvm
+          echo "$(brew --prefix llvm)/bin" >> "$GITHUB_PATH"
+
       - name: Show compiler and host
         run: |
           uname -a || ver
