@@ -6,9 +6,12 @@
 
 /* Portable strdup replacement: pure ISO C, no _GNU_SOURCE needed. */
 static char *dup_str( const char *s ) {
-  size_t n = strlen( s ) + 1;
-  char *copy = malloc( n );
-  if( copy ) memcpy( copy, s, n );
+  size_t length = strlen( s );
+  if( length == SIZE_MAX ) return NULL;
+
+  size_t size = length + 1;
+  char *copy = malloc( size );
+  if( copy ) memcpy( copy, s, size );
   return copy;
 }
 
@@ -72,8 +75,14 @@ hashtable_t *ht_create( size_t capacity ) {
   hashtable_t *ht = malloc( sizeof *ht );
   if( !ht ) return NULL;
 
-  ht->buckets = calloc( capacity, sizeof *ht->buckets );
+  if( capacity > SIZE_MAX / sizeof *ht->buckets ) {
+    free( ht );
+    return NULL;
+  }
+
+  ht->buckets = malloc( capacity * sizeof *ht->buckets );
   if( !ht->buckets ) { free( ht ); return NULL; }
+  for( size_t i = 0; i < capacity; ++i ) ht->buckets[i] = NULL;
 
   ht->capacity = capacity;
   ht->count    = 0;
@@ -132,12 +141,16 @@ int main(void) {
   hashtable_t *ht = ht_create(16);
   if( !ht ) { fputs("out of memory\n", stderr); return 1; }
 
-  ht_put(ht, "hi",     "hello");
-  ht_put(ht, "hey",    "hello");
-  ht_put(ht, "hear",   "What you heard is right");
-  ht_put(ht, "python", "Yo, I love Python");
-  ht_put(ht, "light",  "I like light");
-  ht_put(ht, "what",   "It is clear, ain't it?");
+  if( !ht_put(ht, "hi",     "hello") ||
+      !ht_put(ht, "hey",    "hello") ||
+      !ht_put(ht, "hear",   "What you heard is right") ||
+      !ht_put(ht, "python", "Yo, I love Python") ||
+      !ht_put(ht, "light",  "I like light") ||
+      !ht_put(ht, "what",   "It is clear, ain't it?") ) {
+    fputs("out of memory\n", stderr);
+    ht_destroy(ht);
+    return 1;
+  }
 
   puts("$ Chatbot v1.0.0!");
 

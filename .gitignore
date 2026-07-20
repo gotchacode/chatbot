@@ -23,11 +23,3 @@ chat
 *.i*86
 *.x86_64
 *.hex
-
-# Zig build artifacts
-.zig-cache/
-zig-out/
-c/chat-clang-c17
-c/chat-clang-c23
-c/chat-gcc-c17
-c/chat-gcc-c23
