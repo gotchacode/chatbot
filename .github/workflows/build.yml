@@ -1,0 +1,82 @@
+name: Build and package
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: ${{ matrix.platform }} ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux
+            arch: amd64
+            runner: ubuntu-24.04
+          - platform: linux
+            arch: arm64
+            runner: ubuntu-24.04-arm
+          - platform: macos
+            arch: amd64
+            runner: macos-13
+          - platform: macos
+            arch: arm64
+            runner: macos-14
+          - platform: windows
+            arch: amd64
+            runner: windows-2022
+            extension: .exe
+          - platform: windows
+            arch: arm64
+            runner: windows-11-arm
+            extension: .exe
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Show compiler and host
+        run: |
+          uname -a || ver
+          clang --version
+
+      - name: Build and run smoke test
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          EXTENSION: ${{ matrix.extension }}
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+
+          if [[ "$PLATFORM" == "windows" ]]; then
+            clang -std=c23 -Wall -Wextra -Wpedantic -Wshadow -Wconversion \
+              -Wstrict-prototypes -O2 c/src/chatbot.c -o "dist/chatbot${EXTENSION}"
+            printf 'hi\npython\nexit\n' | "dist/chatbot${EXTENSION}"
+          else
+            make -C c clean
+            make -C c CC=clang
+            cp c/chat "dist/chatbot${EXTENSION}"
+            printf 'hi\npython\nexit\n' | "dist/chatbot${EXTENSION}"
+          fi
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: chatbot-${{ matrix.platform }}-${{ matrix.arch }}
+          path: dist/chatbot${{ matrix.extension }}
+          if-no-files-found: error
+          retention-days: 14
